@@ -1,6 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
+from django.db.models.signals import post_save
+
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
@@ -92,3 +94,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
+
+def post_save_create_profile_receiver(sender, instance, created, **kwargs):
+    pass
+# post_save.connect(post_save_create_profile_receiver, sender=User)
