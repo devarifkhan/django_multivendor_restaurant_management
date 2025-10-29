@@ -3,6 +3,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 
 class UserManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        return self.get(**{self.model.USERNAME_FIELD: username})
+        
     def create_user(self,first_name,last_name,username,email,password=None):
         if not email:
             raise ValueError('User must have an email address')
@@ -59,9 +62,11 @@ class User(AbstractBaseUser):
     is_superadmin=models.BooleanField(default=False)
 
     USERNAME_FIELD='email'
-    REQUIRED_FIELD=['username','first_name','last_name']
+    REQUIRED_FIELDS=['username','first_name','last_name']
+    
+    objects = UserManager()
 
-    def str(self):
+    def __str__(self):
         return self.email
 
     def has_perm(self, perm, obj=None):
