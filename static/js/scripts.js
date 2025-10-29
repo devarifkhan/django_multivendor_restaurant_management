@@ -4617,7 +4617,7 @@
 // Locale: Arabic (ar)
 // Author: Abdel Said: https://github.com/abdelsaid
 // Changes in months, weekdays: Ahmed Elkhatib
-// Native plural forms: forabi https://github.com/forabi
+// Native plural forms.py: forabi https://github.com/forabi
 
 (function (factory) {
     factory(moment);
@@ -5156,7 +5156,7 @@
             return /^(à¦¦à§à¦ªà§à¦°|à¦¬à¦¿à¦•à§‡à¦²|à¦°à¦¾à¦¤)$/.test(input);
         },
         //Bengali is a vast language its spoken
-        //in different forms in various parts of the world.
+        //in different forms.py in various parts of the world.
         //I have just generalized with most common one used
         meridiem : function (hour, minute, isLower) {
             if (hour < 4) {
