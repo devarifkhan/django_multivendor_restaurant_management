@@ -8,8 +8,19 @@ from django.contrib import messages, auth
 
 from .utils import detectUser
 
+def check_role_vendor(user):
+    if user.role == 1:
+        return True
+    else:
+        raise PermissionError('You are not authorized to access this page.')
 
-# Create your views here.
+
+def check_role_customer(user):
+    if user.role == 2:
+        return True
+    else:
+        raise PermissionError('You are not authorized to access this page.')
+
 def registerUser(request):
     if request.user.is_authenticated:
         messages.warning(request, 'You are already logged in.')
