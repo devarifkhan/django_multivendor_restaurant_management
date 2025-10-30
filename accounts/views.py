@@ -8,7 +8,10 @@ from django.contrib import messages, auth
 
 # Create your views here.
 def registerUser(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        messages.warning(request, 'You are already logged in.')
+        return redirect('dashboard')
+    elif request.method == 'POST':
         forms = UserForm(request.POST)
         if forms.is_valid():
             # password = forms.cleaned_data['password']
@@ -75,7 +78,10 @@ def registerVendor(request):
     return render(request, 'accounts/registerVendor.html', context)
 
 def login(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        messages.warning(request, 'You are already logged in.')
+        return redirect('dashboard')
+    elif request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
 
