@@ -1,4 +1,5 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 
 from vendor.forms import VendorForm
@@ -12,14 +13,14 @@ def check_role_vendor(user):
     if user.role == 1:
         return True
     else:
-        raise PermissionError('You are not authorized to access this page.')
+        raise PermissionDenied('You are not authorized to access this page.')
 
 
 def check_role_customer(user):
     if user.role == 2:
         return True
     else:
-        raise PermissionError('You are not authorized to access this page.')
+        raise PermissionDenied('You are not authorized to access this page.')
 
 def registerUser(request):
     if request.user.is_authenticated:
@@ -128,10 +129,12 @@ def myAccount(request):
 
 
 @login_required(login_url='login')
+@user_passes_test(check_role_customer)
 def custDashboard(request):
     return render(request, 'accounts/custDashboard.html')
 
 
 @login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     return render(request, 'accounts/vendorDashboard.html')
