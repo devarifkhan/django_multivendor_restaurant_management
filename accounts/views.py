@@ -7,7 +7,8 @@ from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
 
-from .utils import detectUser
+from .utils import detectUser, send_verification_email
+
 
 def check_role_vendor(user):
     if user.role == 1:
@@ -44,6 +45,8 @@ def registerUser(request):
                                             password=password)
             user.role = User.CUSTOMER
             user.save()
+            # send verification email
+            send_verification_email(request, user)
             messages.success(request, 'Your account has been registered successfully.')
             return redirect('registerUser')
     else:
@@ -138,3 +141,7 @@ def custDashboard(request):
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     return render(request, 'accounts/vendorDashboard.html')
+
+
+def activate(request, uidb64, token):
+    pass  # Implementation of account activation logic goes here
