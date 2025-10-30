@@ -185,7 +185,7 @@ def forgot_password(request):
 
 def reset_password_validate(request, uidb64, token):
     try:
-        uid = XXXXXXXXXXXXXXXXXXXXX(uidb64).decode()
+        uid = urlsafe_base64_decode(uidb64).decode()
         user = User._default_manager.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
