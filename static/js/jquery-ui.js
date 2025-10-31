@@ -8098,7 +8098,7 @@ $.widget( "ui.autocomplete", {
 					if ( this.menu.active ) {
 
 						// #6055 - Opera still allows the keypress to occur
-						// which causes forms.py to submit
+						// which causes forms to submit
 						suppressKeyPress = true;
 						event.preventDefault();
 						this.menu.select( event );
