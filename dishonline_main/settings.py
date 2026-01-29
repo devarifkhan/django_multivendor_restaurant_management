@@ -79,7 +79,7 @@ TEMPLATES = [
                 'marketplace.context_processors.get_cart_counter',
                 'marketplace.context_processors.get_cart_amounts',
                 'accounts.context_processors.get_user_profile',
-                'accounts.context_processors.get_paypal_client_id',
+                'accounts.context_processors.get_stripe_key',
             ],
         },
     },
@@ -177,9 +177,13 @@ if DEBUG == True:
     os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'env\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
     GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'env\Lib\site-packages\osgeo\gdal304.dll')
 
-PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
-
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
-RZP_KEY_ID = config('RZP_KEY_ID')
-RZP_KEY_SECRET = config('RZP_KEY_SECRET')
+# Stripe (Test Mode)
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+
+# SSLCommerz
+SSLCOMMERZ_STORE_ID = config('SSLCOMMERZ_STORE_ID')
+SSLCOMMERZ_STORE_PASSWORD = config('SSLCOMMERZ_STORE_PASSWORD')
+SSLCOMMERZ_SANDBOX = config('SSLCOMMERZ_SANDBOX', default=True, cast=bool)
