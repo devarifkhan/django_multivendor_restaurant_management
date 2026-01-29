@@ -39,4 +39,7 @@ urlpatterns = [
     # ORDERS
     path('orders/', include('orders.urls')),
 
+    # RECOMMENDATIONS
+    path('recommendations/', include('recommendations.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

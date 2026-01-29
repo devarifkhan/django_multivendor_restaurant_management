@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load recommendation_tags %}
+
+{% block content %}
+<div class="main-section pt-5">
+    <div class="page-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 col-sm-12 mx-auto">
+                    <div class="d-flex align-items-center mb-4">
+                        {% if vendor.user_profile.profile_picture %}
+                        <img src="{{ vendor.user_profile.profile_picture.url }}" width="80" height="80" style="object-fit: cover; border-radius: 50%;" alt="">
+                        {% endif %}
+                        <div class="ml-3">
+                            <h3 class="mb-1">{{ vendor.vendor_name }}</h3>
+                            <div class="mt-1">
+                                {% vendor_rating vendor.id %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5>Average Rating: {{ rating_info.avg_rating }}/5 ({{ rating_info.review_count }} reviews)</h5>
+                    </div>
+
+                    <hr>
+
+                    {% for review in reviews %}
+                    <div class="review-item mb-4 p-3" style="background: #f9f9f9; border-radius: 8px;">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>{{ review.user.first_name }} {{ review.user.last_name }}</strong>
+                                <span class="badge badge-info ml-2">{{ review.fooditem.food_title }}</span>
+                                <div class="mt-1">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fa fa-star" style="color: #f5a623;"></i>
+                                        {% else %}
+                                            <i class="fa fa-star-o" style="color: #ccc;"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        {% if review.review_text %}
+                        <p class="mt-2 mb-0">{{ review.review_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No reviews yet for this restaurant.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

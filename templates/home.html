@@ -177,6 +177,36 @@
 	</div>
 	<!-- Choose From Most Popular Listing End -->
 
+	<!-- Recommendation Sections -->
+	{% load recommendation_tags %}
+
+	{% if user.is_authenticated %}
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #f8f9fa;">
+		{% recommendation_section "order_again" "Order Again" %}
+	</div>
+
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #ffffff;">
+		{% recommendation_section "for_you" "Recommended For You" %}
+	</div>
+
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #f8f9fa;">
+		{% recommendation_section "category_based" "Based On Your Taste" %}
+	</div>
+
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #ffffff;">
+		{% vendor_recommendations "Restaurants You Might Like" %}
+	</div>
+	{% endif %}
+
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #f8f9fa;">
+		{% recommendation_section "trending" "Trending Now" %}
+	</div>
+
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 50px;background: #ffffff;">
+		{% recommendation_section "top_rated" "Top Rated Items" %}
+	</div>
+	<!-- Recommendation Sections End -->
+
 	<!-- Home Pages Elements End  -->
 </div>
 <!-- Main Section End -->

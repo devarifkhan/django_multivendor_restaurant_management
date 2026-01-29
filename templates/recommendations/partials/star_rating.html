@@ -1,0 +1,12 @@
+<span class="star-rating" title="{{ rating_info.avg_rating }} out of 5">
+    {% for i in "12345" %}
+        {% if forloop.counter <= rating_info.avg_rating %}
+            <i class="fa fa-star" style="color: #f5a623;"></i>
+        {% elif forloop.counter|add:"-1" < rating_info.avg_rating %}
+            <i class="fa fa-star-half-o" style="color: #f5a623;"></i>
+        {% else %}
+            <i class="fa fa-star-o" style="color: #ccc;"></i>
+        {% endif %}
+    {% endfor %}
+    <small>({{ rating_info.review_count }})</small>
+</span>

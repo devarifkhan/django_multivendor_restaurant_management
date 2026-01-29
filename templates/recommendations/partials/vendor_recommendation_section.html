@@ -1,0 +1,48 @@
+{% load static %}
+{% load recommendation_tags %}
+
+{% if recommended_vendors %}
+<div class="vendor-recommendation-section mb-5">
+    <div class="container">
+        <div class="element-title align-left">
+            <h2>{{ title }}</h2>
+        </div>
+        <div class="listing fancy">
+            <ul class="row">
+                {% for vendor in recommended_vendors %}
+                <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div class="list-post featured">
+                        <div class="img-holder">
+                            <figure>
+                                <a href="{% url 'vendor_detail' vendor.vendor_slug %}">
+                                    {% if vendor.user_profile.profile_picture %}
+                                    <img src="{{ vendor.user_profile.profile_picture.url }}" class="img-thumb wp-post-image" alt="">
+                                    {% else %}
+                                    <img src="{% static 'images/default-profile.png' %}" class="img-thumb wp-post-image" alt="">
+                                    {% endif %}
+                                </a>
+                                {% if vendor.is_open %}
+                                <span class="restaurant-status open">
+                                    <em class="bookmarkRibbon"></em>Open
+                                </span>
+                                {% else %}
+                                <span class="restaurant-status close">
+                                    <em class="bookmarkRibbon"></em>Close
+                                </span>
+                                {% endif %}
+                            </figure>
+                        </div>
+                        <div class="text-holder">
+                            <div class="post-title">
+                                <h5><a href="{% url 'vendor_detail' vendor.vendor_slug %}">{{ vendor.vendor_name }}</a></h5>
+                            </div>
+                            {% vendor_rating vendor.id %}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -152,14 +152,14 @@
                                             <!-- Select payment method -->
                                             <h5>SELECT PAYMENT METHOD</h5>
                                             <div class="payment-method">
-                                                <label>
-                                                    <input type="radio" name="payment_method" value="PayPal">
-                                                    <img src="{% static 'images/PayPal.png' %}" alt="PayPal" width="100">
+                                                <label style="cursor: pointer; padding: 10px; border: 2px solid #ddd; border-radius: 8px; display: inline-block; margin-right: 10px;">
+                                                    <input type="radio" name="payment_method" value="Stripe">
+                                                    <strong>Stripe</strong> <small>(Card Payment)</small>
                                                 </label>
                                                 &emsp;
-                                                <label>
-                                                    <input type="radio" name="payment_method" value="RazorPay">
-                                                    <img src="{% static 'images/razorpay_logo.png' %}" alt="RazorPay" width="100">
+                                                <label style="cursor: pointer; padding: 10px; border: 2px solid #ddd; border-radius: 8px; display: inline-block;">
+                                                    <input type="radio" name="payment_method" value="SSLCommerz">
+                                                    <strong>SSLCommerz</strong> <small>(bKash/Nagad/Card)</small>
                                                 </label>
                                             </div>
                                             <span class="text-danger" id="payment-method-error"></span>

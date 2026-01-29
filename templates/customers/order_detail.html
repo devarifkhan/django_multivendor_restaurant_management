@@ -65,6 +65,11 @@
                                                         </td>
                                                         <td>{{ item.quantity }} QTY</td>
                                                         <td>${{ item.fooditem.price }}</td>
+                                                        <td>
+                                                            <a href="{% url 'add_review' order.order_number item.fooditem.id %}" class="btn btn-sm btn-outline-warning">
+                                                                <i class="fa fa-star"></i> Review
+                                                            </a>
+                                                        </td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>

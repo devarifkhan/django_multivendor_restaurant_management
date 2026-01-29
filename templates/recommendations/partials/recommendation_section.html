@@ -1,0 +1,46 @@
+{% load static %}
+
+{% if items %}
+<div class="recommendation-section mb-5" data-section="{{ section_type }}">
+    <div class="container">
+        <div class="element-title align-left">
+            <h2>{{ title }}</h2>
+        </div>
+        <div class="row">
+            {% for item in items %}
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 mb-3">
+                <div class="card h-100" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <a href="{% url 'vendor_detail' item.vendor.vendor_slug %}">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.food_title }}" style="height: 130px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/default-food.png' %}" class="card-img-top" alt="{{ item.food_title }}" style="height: 130px; object-fit: cover;">
+                        {% endif %}
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title mb-1" style="font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            {{ item.food_title }}
+                        </h6>
+                        <small class="text-muted">{{ item.vendor.vendor_name }}</small>
+                        <div class="mt-1">
+                            <span class="text-danger font-weight-bold">${{ item.price }}</span>
+                        </div>
+                        {% if item.avg_rating %}
+                        <div class="mt-1">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= item.avg_rating %}
+                                    <i class="fa fa-star" style="color: #f5a623; font-size: 10px;"></i>
+                                {% else %}
+                                    <i class="fa fa-star-o" style="color: #ccc; font-size: 10px;"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}

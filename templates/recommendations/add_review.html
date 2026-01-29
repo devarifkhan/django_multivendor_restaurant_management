@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-section pt-5">
+    <div class="page-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 col-sm-12">
+                    <div class="card" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="card-body p-4">
+                            <h4 class="mb-3">
+                                {% if existing_review %}Edit Your Review{% else %}Write a Review{% endif %}
+                            </h4>
+                            <div class="d-flex align-items-center mb-3">
+                                {% if fooditem.image %}
+                                <img src="{{ fooditem.image.url }}" width="60" height="60" style="object-fit: cover; border-radius: 8px;" alt="">
+                                {% endif %}
+                                <div class="ml-3">
+                                    <h5 class="mb-0">{{ fooditem.food_title }}</h5>
+                                    <small class="text-muted">{{ fooditem.vendor.vendor_name }}</small>
+                                </div>
+                            </div>
+
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <label><b>Rating (1-5 stars):</b></label>
+                                    <div class="star-input" id="star-input">
+                                        {% for i in "12345" %}
+                                        <i class="fa fa-star-o fa-2x" data-rating="{{ forloop.counter }}" style="cursor: pointer; color: #ccc; margin-right: 5px;"></i>
+                                        {% endfor %}
+                                        {{ form.rating }}
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label><b>Your Review:</b></label>
+                                    {{ form.review_text }}
+                                </div>
+                                <button type="submit" class="btn btn-danger w-100">
+                                    {% if existing_review %}Update Review{% else %}Submit Review{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Star rating interactive input
+    var stars = document.querySelectorAll('#star-input .fa');
+    var ratingInput = document.getElementById('id_rating');
+
+    // Set initial state from existing value
+    var currentRating = ratingInput.value || 0;
+    updateStars(currentRating);
+
+    stars.forEach(function(star) {
+        star.addEventListener('click', function() {
+            var rating = this.getAttribute('data-rating');
+            ratingInput.value = rating;
+            updateStars(rating);
+        });
+        star.addEventListener('mouseover', function() {
+            var rating = this.getAttribute('data-rating');
+            highlightStars(rating);
+        });
+        star.addEventListener('mouseout', function() {
+            updateStars(ratingInput.value || 0);
+        });
+    });
+
+    function updateStars(rating) {
+        stars.forEach(function(star) {
+            var starRating = star.getAttribute('data-rating');
+            if (starRating <= rating) {
+                star.classList.remove('fa-star-o');
+                star.classList.add('fa-star');
+                star.style.color = '#f5a623';
+            } else {
+                star.classList.remove('fa-star');
+                star.classList.add('fa-star-o');
+                star.style.color = '#ccc';
+            }
+        });
+    }
+
+    function highlightStars(rating) {
+        stars.forEach(function(star) {
+            var starRating = star.getAttribute('data-rating');
+            if (starRating <= rating) {
+                star.style.color = '#f5a623';
+            } else {
+                star.style.color = '#ccc';
+            }
+        });
+    }
+
+    // Hide the number input
+    ratingInput.style.display = 'none';
+</script>
+{% endblock %}
