@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'orders.request_object.RequestObjectMiddleware', # custom middleware created to access the request object in models.py
 ]
 
-ROOT_URLCONF = 'dishOnline_main.urls'
+ROOT_URLCONF = 'dishonline_main.urls'
 
 TEMPLATES = [
     {
@@ -76,7 +76,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.get_vendor',
-                'accounts.context_processors.get_google_api',
+                'accounts.context_processors.get_locationiq_token',
                 'marketplace.context_processors.get_cart_counter',
                 'marketplace.context_processors.get_cart_amounts',
                 'accounts.context_processors.get_user_profile',
@@ -86,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dishOnline_main.wsgi.application'
+WSGI_APPLICATION = 'dishonline_main.wsgi.application'
 
 
 # Database
@@ -145,7 +145,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR /'static'
 STATICFILES_DIRS = [
-    'dishOnline_main/static'
+    'dishonline_main/static'
 ]
 
 # Media files configuration
@@ -172,12 +172,7 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 CONTACT_NOTIFICATION_EMAIL = config('CONTACT_NOTIFICATION_EMAIL', default=config('EMAIL_HOST_USER'))
 
-GOOGLE_API_KEY = config('GOOGLE_API_KEY')
-
-if DEBUG == True:
-    os.environ['PATH'] = os.path.join(BASE_DIR, 'env\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
-    os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'env\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
-    GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'env\Lib\site-packages\osgeo\gdal304.dll')
+LOCATIONIQ_ACCESS_TOKEN = config('LOCATIONIQ_ACCESS_TOKEN')
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 

@@ -20,8 +20,8 @@ def get_user_profile(request):
 
 
 
-def get_google_api(request):
-    return {'GOOGLE_API_KEY': settings.GOOGLE_API_KEY}
+def get_locationiq_token(request):
+    return {'LOCATIONIQ_ACCESS_TOKEN': settings.LOCATIONIQ_ACCESS_TOKEN}
 
 
 def get_stripe_key(request):
