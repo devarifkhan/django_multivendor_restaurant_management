@@ -12,7 +12,7 @@
                         {% if fooditem.image %}
                         <img src="{{ fooditem.image.url }}" width="80" height="80" style="object-fit: cover; border-radius: 8px;" alt="">
                         {% endif %}
-                        <div class="ml-3">
+                        <div class="ms-3">
                             <h3 class="mb-1">{{ fooditem.food_title }}</h3>
                             <a href="{% url 'vendor_detail' fooditem.vendor.vendor_slug %}" class="text-muted">{{ fooditem.vendor.vendor_name }}</a>
                             <div class="mt-1">
