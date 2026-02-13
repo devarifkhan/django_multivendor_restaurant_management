@@ -1,74 +1,77 @@
 let autocomplete;
 
 function initAutoComplete(){
-autocomplete = new google.maps.places.Autocomplete(
-    document.getElementById('id_address'),
-    {
-        types: ['geocode', 'establishment'],
-        //default in this app is "IN" - add your country code
-        componentRestrictions: {'country': ['in']},
-    })
-// function to specify what should happen when the prediction is clicked
-autocomplete.addListener('place_changed', onPlaceChanged);
-}
-
-function onPlaceChanged (){
-    var place = autocomplete.getPlace();
-
-    // User did not select the prediction. Reset the input field or alert()
-    if (!place.geometry){
-        document.getElementById('id_address').placeholder = "Start typing...";
-    }
-    else{
-        // console.log('place name=>', place.name)
-    }
-
-    // get the address components and assign them to the fields
-    // console.log(place);
-    var geocoder = new google.maps.Geocoder()
-    var address = document.getElementById('id_address').value
-
-    geocoder.geocode({'address': address}, function(results, status){
-        // console.log('results=>', results)
-        // console.log('status=>', status)
-        if(status == google.maps.GeocoderStatus.OK){
-            var latitude = results[0].geometry.location.lat();
-            var longitude = results[0].geometry.location.lng();
-
-            // console.log('lat=>', latitude);
-            // console.log('long=>', longitude);
-            $('#id_latitude').val(latitude);
-            $('#id_longitude').val(longitude);
-
-            $('#id_address').val(address);
-        }
+    // Initialize LocationIQ autocomplete
+    const addressInput = document.getElementById('id_address');
+    if (!addressInput) return;
+    
+    autocomplete = new locationiq.Autocomplete(addressInput, {
+        key: LOCATIONIQ_ACCESS_TOKEN,
+        limit: 5,
+        dedupe: 1,
+        countrycodes: 'in', // India - change to your country code
     });
 
-    // loop through the address components and assign other address data
-    console.log(place.address_components);
-    for(var i=0; i<place.address_components.length; i++){
-        for(var j=0; j<place.address_components[i].types.length; j++){
-            // get country
-            if(place.address_components[i].types[j] == 'country'){
-                $('#id_country').val(place.address_components[i].long_name);
-            }
-            // get state
-            if(place.address_components[i].types[j] == 'administrative_area_level_1'){
-                $('#id_state').val(place.address_components[i].long_name);
-            }
-            // get city
-            if(place.address_components[i].types[j] == 'locality'){
-                $('#id_city').val(place.address_components[i].long_name);
-            }
-            // get pincode
-            if(place.address_components[i].types[j] == 'postal_code'){
-                $('#id_pin_code').val(place.address_components[i].long_name);
-            }else{
-                $('#id_pin_code').val("");
-            }
-        }
+    // Listen for selection event
+    autocomplete.on('select', function(e) {
+        console.log('Selected place:', e);
+        onPlaceChanged(e);
+    });
+}
+
+function onPlaceChanged(placeData){
+    if (!placeData || !placeData.lat || !placeData.lon) {
+        document.getElementById('id_address').placeholder = "Start typing...";
+        return;
     }
 
+    // Set latitude and longitude
+    const latitude = placeData.lat;
+    const longitude = placeData.lon;
+    
+    $('#id_latitude').val(latitude);
+    $('#id_longitude').val(longitude);
+    $('#id_address').val(placeData.display_name);
+
+    // Get detailed address information using reverse geocoding
+    fetch(`https://us1.locationiq.com/v1/reverse.php?key=${LOCATIONIQ_ACCESS_TOKEN}&lat=${latitude}&lon=${longitude}&format=json`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Reverse geocode data:', data);
+            const address = data.address || {};
+            
+            // Extract address components
+            const country = address.country || '';
+            const state = address.state || address.region || '';
+            const city = address.city || address.town || address.village || '';
+            const postcode = address.postcode || '';
+            
+            // Update form fields
+            $('#id_country').val(country);
+            $('#id_state').val(state);
+            $('#id_city').val(city);
+            $('#id_pin_code').val(postcode);
+        })
+        .catch(error => {
+            console.error('Reverse geocoding error:', error);
+            // Try to extract from display_name if reverse geocoding fails
+            extractAddressFromDisplayName(placeData.display_name);
+        });
+}
+
+function extractAddressFromDisplayName(displayName) {
+    // Fallback: try to extract basic info from display name
+    // Display name format is usually: "address, city, state, postcode, country"
+    const parts = displayName.split(',').map(p => p.trim());
+    if (parts.length >= 2) {
+        $('#id_country').val(parts[parts.length - 1] || '');
+        if (parts.length >= 3) {
+            $('#id_state').val(parts[parts.length - 2] || '');
+        }
+        if (parts.length >= 4) {
+            $('#id_city').val(parts[parts.length - 3] || '');
+        }
+    }
 }
 
 
@@ -290,6 +293,15 @@ $(document).ready(function(){
             }
         })
     })
+
+    // Initialize LocationIQ autocomplete if address field exists
+    if (document.getElementById('id_address')) {
+        if (typeof locationiq !== 'undefined') {
+            initAutoComplete();
+        } else {
+            console.warn('LocationIQ library not loaded');
+        }
+    }
 
    // document ready close 
 });
