@@ -11,29 +11,30 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                    <!-- Load the sidebar here -->
                     {% include 'includes/v_sidebar.html' %}
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                     <div class="user-dashboard loader-holder">
                         <div class="user-holder">
-                            <h5 class="text-uppercase">Overview</h5>
-                            <p class="text-right">Logged in as: <b>{{ user.email }}</b></p>
-                            <div class="row">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-uppercase mb-0" style="border: none; padding: 0;">Overview</h5>
+                                <p class="text-muted mb-0">Logged in as: <strong>{{ user.email }}</strong></p>
+                            </div>
+                            <div class="row g-3 mb-4">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="card">
+                                    <div class="card stat-card">
                                         <div class="card-header">
-                                            Total Orders
+                                            <i class="fa-solid fa-bag-shopping me-2"></i>Total Orders
                                         </div>
                                         <div class="card-body text-center">
-                                            <a href="#"><h5 class="card-title">{{ orders_count }}</h5></a>
+                                            <a href="{% url 'vendor_my_orders' %}"><h5 class="card-title">{{ orders_count }}</h5></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="card">
+                                    <div class="card stat-card">
                                         <div class="card-header">
-                                            Total Revenue
+                                            <i class="fa-solid fa-dollar-sign me-2"></i>Total Revenue
                                         </div>
                                         <div class="card-body text-center">
                                             <a href="#"><h5 class="card-title">${{total_revenue | floatformat:2}}</h5></a>
@@ -41,9 +42,9 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <div class="card">
+                                    <div class="card stat-card">
                                         <div class="card-header">
-                                            This Month
+                                            <i class="fa-solid fa-calendar-days me-2"></i>This Month
                                         </div>
                                         <div class="card-body text-center">
                                             <a href="#"><h5 class="card-title">${{ current_month_revenue | floatformat:2}}</h5></a>
@@ -51,9 +52,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <br>
-                            
+
                             <h5 class="text-uppercase">Recent Orders</h5>
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -76,18 +75,18 @@
                                                     <td>{{ order.order_number }}</td>
                                                     <td>{{ order.name }}</td>
                                                     <td>${{ order.get_total_by_vendor.grand_total }}</td>
-                                                    <td>{{ order.status }}</td>
+                                                    <td><span class="badge bg-warning">{{ order.status }}</span></td>
                                                     <td>{{ order.created_at }}</td>
-                                                    <td><a href="{% url 'vendor_order_detail' order.order_number %}" class="btn btn-danger">Details</a></td>
+                                                    <td><a href="{% url 'vendor_order_detail' order.order_number %}" class="btn btn-danger btn-sm">Details</a></td>
                                                   </tr>
                                                   {% endfor %}
                                                 </tbody>
                                               </table>
-                                        </div>												
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>

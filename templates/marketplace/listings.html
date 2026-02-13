@@ -11,13 +11,13 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="row">
                         <aside class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                            
+
                         </aside>
                         <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                            <div class="listing-sorting-holder">
+                            <div class="listing-sorting-holder mb-3">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                        <h4>{{ vendor_count }} Restaurant's found</h4>
+                                        <h4><i class="fa-solid fa-utensils me-2 text-danger"></i>{{ vendor_count }} Restaurant{{ vendor_count|pluralize }} found</h4>
                                     </div>
                                 </div>
                             </div>
@@ -27,53 +27,51 @@
                                     <li style="line-height: 15px;">
                                         <div class="img-holder">
                                             <figure>
-                                                <a href="#">
+                                                <a href="{% url 'vendor_detail' vendor.vendor_slug %}">
                                                     {% if vendor.user_profile.profile_picture %}
-                                                    <img src="{{ vendor.user_profile.profile_picture.url }}" class="img-list wp-post-image" alt="">
+                                                    <img src="{{ vendor.user_profile.profile_picture.url }}" class="img-list wp-post-image" alt="{{ vendor.vendor_name }}">
                                                     {% else %}
-                                                    <img src="{% static 'images/default-profile.png' %}" class="img-list wp-post-image" alt="">
+                                                    <img src="{% static 'images/default-profile.png' %}" class="img-list wp-post-image" alt="{{ vendor.vendor_name }}">
                                                     {% endif %}
                                                 </a>
                                             </figure>
                                             {% if vendor.is_open %}
                                             <span class="restaurant-status open"><em class="bookmarkRibbon"></em>Open</span>
                                             {% else %}
-                                            <span class="restaurant-status close"><em class="bookmarkRibbon"></em>Close</span>
+                                            <span class="restaurant-status close"><em class="bookmarkRibbon"></em>Closed</span>
                                             {% endif %}
                                         </div>
                                         <div class="text-holder">
-                                            
+
                                             <div class="post-title">
                                                 <h5>
                                                     <a href="{% url 'vendor_detail' vendor.vendor_slug %}">{{ vendor.vendor_name }}</a>
                                                 </h5>
                                             </div>
                                             {% if vendor.user_profile.address %}
-                                            <span><small class="text-muted">{{ vendor.user_profile.address }}</small></span>
+                                            <span><small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i>{{ vendor.user_profile.address }}</small></span>
                                             {% endif %}
 
                                             {% if source_location %}
                                             <br>
-                                            <span><small><b>{{vendor.kms}}km</b> away from {{source_location}}</small></span>
+                                            <span><small><strong>{{vendor.kms}} km</strong> away from {{source_location}}</small></span>
                                             {% endif %}
                                         </div>
                                         <div class="list-option">
-
-                                            <a href="{% url 'vendor_detail' vendor.vendor_slug %}" class="viewmenu-btn text-color">View Menu</a>
+                                            <a href="{% url 'vendor_detail' vendor.vendor_slug %}" class="btn btn-danger btn-sm">View Menu</a>
                                         </div>
                                     </li>
                                     {% endfor %}
-                                    
+
                                 </ul>
                             </div>
-                            
+
                         </div>
                         <div class="section-sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                            <div class="message-box" style="background-color: #fa9918;">
-                                <strong>I'm not Listed!</strong><span>is your restaurant or
-                                    business not
-                                    listed on over site</span>
-                                <a href="{% url 'registerVendor' %}" class="request-btn">Add Your business!</a>
+                            <div class="message-box" style="background: linear-gradient(135deg, var(--primary, #E23744), var(--accent, #ff6b35)); border-radius: 12px; padding: 30px; color: #fff;">
+                                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Not Listed Yet?</strong>
+                                <span style="opacity: 0.9; font-size: 14px;">Is your restaurant or business not listed on our site?</span>
+                                <a href="{% url 'registerVendor' %}" class="btn btn-light fw-bold mt-3 d-block text-center" style="color: var(--primary, #E23744);">Add Your Business</a>
                             </div>
                         </div>
                     </div>
