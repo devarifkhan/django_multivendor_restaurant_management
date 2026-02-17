@@ -147,6 +147,63 @@ After running `seed_data`, you can log in with these accounts.
 | carlos@burritobowl.com | vendor123 | Mexican Burrito Bowl |
 | yuki@sushiworld.com | vendor123 | Sushi World |
 
+## AI-Powered Recommendation Engine
+
+The application includes a sophisticated **Amazon-style recommendation system** that provides personalized food and restaurant suggestions.
+
+### Features
+
+#### 1. **Order Again**
+Shows items the user has previously ordered, sorted by frequency.
+
+#### 2. **Recommended For You**
+Uses collaborative filtering to suggest items based on what similar users have ordered.
+
+#### 3. **Based On Your Taste**
+Category-based recommendations from the user's favorite food categories.
+
+#### 4. **Trending Now**
+Displays the most popular items from the last 30 days across all users.
+
+#### 5. **Top Rated Items**
+Shows highest-rated food items based on customer reviews.
+
+#### 6. **Frequently Bought Together**
+Suggests items that are commonly ordered together with a specific dish.
+
+#### 7. **Similar Items**
+Recommends items from the same category or vendor.
+
+#### 8. **Restaurants You Might Like**
+Vendor recommendations based on ordering patterns and preferences.
+
+### How It Works
+
+The recommendation engine uses multiple algorithms:
+
+- **Collaborative Filtering**: Finds users with similar ordering patterns
+- **Content-Based Filtering**: Analyzes food categories and vendor preferences
+- **Popularity-Based**: Tracks trending items and top-rated dishes
+- **Association Rules**: Identifies frequently bought together items
+
+### Where to See Recommendations
+
+- **Homepage** (`/`): Personalized recommendations for logged-in users
+- **Restaurant Pages**: "Similar Items" and "Frequently Bought Together"
+- **Food Detail Pages**: Related recommendations
+
+### Testing the Engine
+
+```bash
+# Test recommendation algorithms
+docker-compose exec web python manage.py shell
+>>> from recommendations.engine import RecommendationEngine
+>>> from accounts.models import User
+>>> user = User.objects.filter(role=User.CUSTOMER).first()
+>>> trending = RecommendationEngine.get_trending_items(limit=10)
+>>> print(f"Found {trending.count()} trending items")
+```
+
 ## Common Commands
 
 ### View Logs
