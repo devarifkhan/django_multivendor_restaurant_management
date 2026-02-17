@@ -78,3 +78,106 @@ SSLCOMMERZ_STORE_PASSWORD=your_store_password
 SSLCOMMERZ_SANDBOX=True
 ```
 
+### 3. Build and Start Docker Containers
+
+```bash
+docker-compose up --build -d
+```
+
+This will:
+
+- Build the Docker images
+- Start PostgreSQL database with PostGIS extension
+- Start the Django web application
+- Run migrations automatically
+
+### 4. Seed Sample Data
+
+Populate the database with sample restaurants, food items, and users:
+
+```bash
+docker-compose exec web python manage.py seed_data --clear
+```
+
+This will create:
+
+- 10 customer accounts
+- 5 vendor accounts with restaurants
+- 23 food categories
+- 57 food items
+- Opening hours for all restaurants
+- Sample orders and reviews
+
+### 5. Create Admin Account (Optional)
+
+To access the Django admin panel:
+
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+### 6. Access the Application
+
+- **Website**: <http://localhost:8000>
+- **Admin Panel**: <http://localhost:8000/admin>
+
+## Test Credentials
+
+After running `seed_data`, you can log in with these accounts.
+
+**Note: Login with EMAIL ADDRESS, not username.**
+
+### Customer Accounts
+
+| Email | Password |
+|-------|----------|
+| john.doe@example.com | customer123 |
+| jane.smith@example.com | customer123 |
+| michael.j@example.com | customer123 |
+| emily.w@example.com | customer123 |
+| sarah.d@example.com | customer123 |
+
+### Vendor Accounts
+
+| Email | Password | Restaurant |
+|-------|----------|------------|
+| mario.rossi@pizzahut.com | vendor123 | Italian Pizza House |
+| wang.chen@asianfusion.com | vendor123 | Asian Fusion Delight |
+| ahmed@kebabhouse.com | vendor123 | Mediterranean Kebab House |
+| carlos@burritobowl.com | vendor123 | Mexican Burrito Bowl |
+| yuki@sushiworld.com | vendor123 | Sushi World |
+
+## Common Commands
+
+### View Logs
+
+```bash
+docker-compose logs -f web
+```
+
+### Stop Containers
+
+```bash
+docker-compose down
+```
+
+### Rebuild After Code Changes
+
+```bash
+docker-compose up --build
+```
+
+### Run Django Management Commands
+
+```bash
+docker-compose exec web python manage.py <command>
+```
+
+### Reset Database
+
+```bash
+docker-compose down -v
+docker-compose up -d
+docker-compose exec web python manage.py seed_data --clear
+```
+

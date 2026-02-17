@@ -21,6 +21,7 @@ from accounts.models import User, UserProfile
 from vendor.models import Vendor, OpeningHour
 from menu.models import Category, FoodItem
 from orders.models import Order, Payment, OrderedFood
+from orders.utils import generate_order_number
 from recommendations.models import Review, UserActivity
 
 
@@ -441,7 +442,7 @@ class Command(BaseCommand):
                 order = Order.objects.create(
                     user=customer,
                     payment=payment,
-                    order_number=f'ORD{random.randint(10000, 99999)}',
+                    order_number='TEMP',  # Temporary, will be generated after save
                     first_name=customer.first_name,
                     last_name=customer.last_name,
                     phone=customer.phone_number,
@@ -457,6 +458,10 @@ class Command(BaseCommand):
                     status=random.choice(statuses),
                     is_ordered=True
                 )
+
+                # Generate proper order number using order ID
+                order.order_number = generate_order_number(order.id)
+                order.save()
 
                 # Add items from 1-2 random vendors
                 selected_vendors = random.sample(self.vendors, random.randint(1, 2))
