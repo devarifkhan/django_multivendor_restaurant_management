@@ -96,7 +96,14 @@
                                             
                                                 {% for item in cart_items %}
                                                 <li id="cart-item-{{item.id}}">
-                                                    <div class="image-holder"> <img src="{{ item.fooditem.image.url }}" alt=""></div>
+                                                    <div class="image-holder">
+                                                        {% load static %}
+                                                        {% if item.fooditem.image %}
+                                                        <img src="{{ item.fooditem.image.url }}" alt="{{ item.fooditem }}">
+                                                        {% else %}
+                                                        <img src="{% static 'images/default-food.png' %}" alt="{{ item.fooditem }}">
+                                                        {% endif %}
+                                                    </div>
                                                     <div class="text-holder">
                                                         <h6>{{ item.fooditem }}</h6>
                                                         <span>{{ item.fooditem.description }}</span>
