@@ -15,6 +15,12 @@
 							Discover Amazing Food<br>From Local Restaurants</h1>
 						<p style="text-align:center;">
 							Order from your favorite restaurants and get it delivered to your doorstep.</p>
+						<p style="text-align:center; margin-top: 10px;">
+							<span style="background: rgba(255,255,255,0.95); padding: 8px 20px; border-radius: 25px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+								<i class="fa-solid fa-robot me-2" style="color: #e23744;"></i>
+								<strong style="color: #333;">AI-Powered Recommendations</strong>
+							</span>
+						</p>
 					</div>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
@@ -170,6 +176,25 @@
 	</div>
 	<!-- Popular Restaurants End -->
 
+	<!-- AI Recommendation Section Header -->
+	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 60px;padding-bottom: 20px;background: linear-gradient(135deg, #e23744 0%, #ff6b6b 100%);">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="element-title align-center">
+						<h2 style="color: white; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+							<i class="fa-solid fa-robot me-2"></i>AI-Powered Recommendations
+						</h2>
+						<p style="color: rgba(255,255,255,0.95); font-size: 16px;">
+							Personalized food suggestions powered by intelligent algorithms
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- AI Recommendation Section Header End -->
+
 	<!-- Recommendation Sections -->
 	{% load recommendation_tags %}
 
@@ -179,7 +204,7 @@
 	</div>
 
 	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #f8f9fa;">
-		{% recommendation_section "for_you" "Recommended For You" %}
+		{% recommendation_section "for_you" "🤖 AI Recommended For You" %}
 	</div>
 
 	<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 30px;padding-bottom: 30px;background: #ffffff;">
