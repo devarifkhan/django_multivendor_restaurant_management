@@ -49,7 +49,15 @@ def order_detail(request, order_number):
         subtotal = 0
         for item in ordered_food:
             subtotal += (item.price * item.quantity)
-        tax_data = json.loads(order.tax_data)
+
+        # Handle tax_data safely
+        tax_data = {}
+        if order.tax_data:
+            try:
+                tax_data = json.loads(order.tax_data)
+            except (json.JSONDecodeError, TypeError):
+                tax_data = {}
+
         context = {
             'order': order,
             'ordered_food': ordered_food,
@@ -57,6 +65,6 @@ def order_detail(request, order_number):
             'tax_data': tax_data,
         }
         return render(request, 'customers/order_detail.html', context)
-    except:
+    except Order.DoesNotExist:
         return redirect('customer')
     

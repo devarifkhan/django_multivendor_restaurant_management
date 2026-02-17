@@ -250,16 +250,27 @@ def order_detail(request, order_number):
         order = Order.objects.get(order_number=order_number, is_ordered=True)
         ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=get_vendor(request))
 
+        # Get vendor-specific totals, handle missing data gracefully
+        try:
+            vendor_totals = order.get_total_by_vendor()
+            subtotal = vendor_totals.get('subtotal', 0)
+            tax_data = vendor_totals.get('tax_dict', {})
+            grand_total = vendor_totals.get('grand_total', 0)
+        except:
+            subtotal = 0
+            tax_data = {}
+            grand_total = 0
+
         context = {
             'order': order,
             'ordered_food': ordered_food,
-            'subtotal': order.get_total_by_vendor()['subtotal'],
-            'tax_data': order.get_total_by_vendor()['tax_dict'],
-            'grand_total': order.get_total_by_vendor()['grand_total'],
+            'subtotal': subtotal,
+            'tax_data': tax_data,
+            'grand_total': grand_total,
         }
-    except:
+        return render(request, 'vendor/order_detail.html', context)
+    except Order.DoesNotExist:
         return redirect('vendor')
-    return render(request, 'vendor/order_detail.html', context)
 
 
 def my_orders(request):
