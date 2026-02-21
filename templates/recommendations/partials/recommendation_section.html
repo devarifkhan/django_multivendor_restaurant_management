@@ -3,11 +3,34 @@
 {% if items %}
 <div class="recommendation-section mb-5" data-section="{{ section_type }}">
     <div class="container">
-        <div class="element-title align-left">
-            <h2>{{ title }}</h2>
-            <p style="color: #e23744; font-size: 13px; margin-top: -5px;">
-                <i class="fa-solid fa-robot me-1"></i>AI-Powered
-            </p>
+        <div class="element-title align-left d-flex flex-wrap align-items-start justify-content-between">
+            <div>
+                <h2>{{ title }}</h2>
+                <p style="color: #e23744; font-size: 13px; margin-top: -5px;">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Personalised for you
+                </p>
+            </div>
+            <!-- Algorithm badge: explains which AI technique generated this section -->
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#fff3f4;border:1px solid #ffc5c8;border-radius:20px;padding:5px 14px;font-size:12px;color:#c0392b;font-weight:600;white-space:nowrap;margin-top:6px;">
+                {% if section_type == "order_again" %}
+                    <i class="fa-solid fa-clock-rotate-left"></i> Order History Analysis
+                    <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Based on items you have ordered before"></i>
+                {% elif section_type == "for_you" %}
+                    <i class="fa-solid fa-users"></i> Collaborative Filtering
+                    <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Users with similar tastes also loved these items"></i>
+                {% elif section_type == "category_based" %}
+                    <i class="fa-solid fa-tags"></i> Taste Profile Matching
+                    <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Picked from your favourite food categories"></i>
+                {% elif section_type == "trending" %}
+                    <i class="fa-solid fa-fire-flame-curved"></i> Trending Analysis
+                    <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Most ordered items in the last 30 days"></i>
+                {% elif section_type == "top_rated" %}
+                    <i class="fa-solid fa-star"></i> Rating Aggregation
+                    <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Highest rated by real customer reviews"></i>
+                {% else %}
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Smart Pick
+                {% endif %}
+            </span>
         </div>
         <div class="row">
             {% for item in items %}

@@ -99,8 +99,8 @@
                                         </div>
                                         <ul>
                                             {% for food in category.fooditems.all %}
-                                            <li>
-                                                <div class="image-holder">
+                                            <li style="flex-wrap:wrap;">
+                                                <div class="image-holder similar-trigger" data-food-id="{{ food.id }}" style="cursor:pointer;" title="Click to see similar items">
                                                     {% if food.image %}
                                                     <img src="{{ food.image.url }}" alt="{{ food.food_title }}">
                                                     {% else %}
@@ -108,8 +108,17 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="text-holder">
-                                                    <h6>{{ food }}</h6>
+                                                    <h6 class="similar-trigger" data-food-id="{{ food.id }}" style="cursor:pointer;">
+                                                        {{ food }}
+                                                    </h6>
                                                     <span>{{ food.description }}</span>
+                                                    <!-- Similar toggle link -->
+                                                    <a href="#" class="similar-toggle-link" data-food-id="{{ food.id }}"
+                                                       style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#e23744;margin-top:4px;text-decoration:none;">
+                                                        <i class="fa-solid fa-wand-magic-sparkles" style="font-size:10px;"></i>
+                                                        <span class="similar-toggle-text">See similar items</span>
+                                                        <i class="fa-solid fa-chevron-down similar-chevron" style="font-size:9px;transition:transform .2s;"></i>
+                                                    </a>
                                                 </div>
                                                 <div class="price-holder">
                                                     <span class="price">${{ food.price }}</span>
@@ -117,11 +126,25 @@
                                                     <a href="#" class="decrease_cart" data-id="{{ food.id }}" data-url="{% url 'decrease_cart' food.id %}" style="margin-right: 28px;"><i class="icon-minus text-color"></i></a>
                                                     <label id="qty-{{food.id}}">0</label>
                                                     <a href="#" class="add_to_cart" data-id="{{ food.id }}" data-url="{% url 'add_to_cart' food.id %}"><i class="icon-plus4 text-color"></i></a>
-                                                    
+                                                </div>
+
+                                                <!-- Similar Items Panel (inline, full-width under this item) -->
+                                                <div class="similar-panel" id="similar-panel-{{ food.id }}"
+                                                     style="display:none;width:100%;padding:12px 0 4px;border-top:1px dashed #f0f0f0;margin-top:8px;">
+                                                    <p style="font-size:12px;color:#888;margin-bottom:8px;">
+                                                        <i class="fa-solid fa-wand-magic-sparkles me-1" style="color:#e23744;"></i>
+                                                        <strong style="color:#333;">You might also like</strong>
+                                                        <span style="font-size:10px;color:#aaa;margin-left:6px;">— similar items from this menu</span>
+                                                    </p>
+                                                    <div class="similar-items-row d-flex flex-wrap gap-2" id="similar-items-{{ food.id }}">
+                                                        <span class="similar-loading" style="font-size:12px;color:#aaa;">
+                                                            <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Loading...
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </li>
                                             {% endfor %}
-                                            
+
                                         </ul>
                                         {% endfor %}
                                         
@@ -147,4 +170,97 @@
 </div>
 <!-- Main Section End -->
 
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+    // Cache: food_id → fetched items (avoid repeated AJAX calls)
+    const cache = {};
+
+    function renderStars(rating) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            html += i <= Math.round(rating)
+                ? '<i class="fa fa-star" style="color:#f5a623;font-size:10px;"></i>'
+                : '<i class="fa fa-star-o" style="color:#ccc;font-size:10px;"></i>';
+        }
+        return html;
+    }
+
+    function buildCard(item) {
+        const img = item.image
+            ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:70px;object-fit:cover;border-radius:6px 6px 0 0;">`
+            : `<img src="/static/images/default-food.png" alt="${item.title}" style="width:100%;height:70px;object-fit:cover;border-radius:6px 6px 0 0;">`;
+        const stars = item.avg_rating ? `<div style="margin-top:2px;">${renderStars(item.avg_rating)}</div>` : '';
+        return `
+        <a href="/vendor/${item.vendor_slug}/" style="text-decoration:none;color:inherit;">
+          <div style="width:120px;border:1px solid #f0f0f0;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);background:#fff;flex-shrink:0;">
+            ${img}
+            <div style="padding:6px;">
+              <p style="font-size:11px;font-weight:600;margin:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${item.title}</p>
+              <p style="font-size:10px;color:#888;margin:1px 0;">${item.vendor}</p>
+              <p style="font-size:11px;color:#e23744;font-weight:700;margin:2px 0;">$${item.price}</p>
+              ${stars}
+            </div>
+          </div>
+        </a>`;
+    }
+
+    function showPanel(foodId) {
+        const panel = document.getElementById(`similar-panel-${foodId}`);
+        const row   = document.getElementById(`similar-items-${foodId}`);
+        const link  = document.querySelector(`.similar-toggle-link[data-food-id="${foodId}"]`);
+        const text  = link ? link.querySelector('.similar-toggle-text') : null;
+        const chev  = link ? link.querySelector('.similar-chevron') : null;
+
+        const isOpen = panel.style.display !== 'none';
+
+        if (isOpen) {
+            panel.style.display = 'none';
+            if (text) text.textContent = 'See similar items';
+            if (chev) chev.style.transform = '';
+            return;
+        }
+
+        panel.style.display = 'block';
+        if (text) text.textContent = 'Hide similar';
+        if (chev) chev.style.transform = 'rotate(180deg)';
+
+        // Already fetched?
+        if (cache[foodId]) {
+            renderItems(row, cache[foodId]);
+            return;
+        }
+
+        // AJAX call
+        fetch(`/recommendations/similar-items/${foodId}/`)
+            .then(r => r.json())
+            .then(data => {
+                cache[foodId] = data.items;
+                renderItems(row, data.items);
+            })
+            .catch(() => {
+                row.innerHTML = '<span style="font-size:12px;color:#aaa;">Could not load similar items.</span>';
+            });
+    }
+
+    function renderItems(row, items) {
+        if (!items || items.length === 0) {
+            row.innerHTML = '<span style="font-size:12px;color:#aaa;">No similar items found.</span>';
+            return;
+        }
+        row.innerHTML = items.map(buildCard).join('');
+    }
+
+    // Delegated click — image, title, or the toggle link
+    document.addEventListener('click', function (e) {
+        const trigger = e.target.closest('.similar-trigger, .similar-toggle-link');
+        if (!trigger) return;
+        e.preventDefault();
+        const foodId = trigger.dataset.foodId;
+        if (foodId) showPanel(foodId);
+    });
+})();
+</script>
 {% endblock %}

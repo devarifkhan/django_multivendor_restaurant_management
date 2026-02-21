@@ -4,11 +4,17 @@
 {% if recommended_vendors %}
 <div class="vendor-recommendation-section mb-5">
     <div class="container">
-        <div class="element-title align-left">
-            <h2>{{ title }}</h2>
-            <p style="color: #e23744; font-size: 13px; margin-top: -5px;">
-                <i class="fa-solid fa-robot me-1"></i>AI-Powered
-            </p>
+        <div class="element-title align-left d-flex flex-wrap align-items-start justify-content-between">
+            <div>
+                <h2>{{ title }}</h2>
+                <p style="color: #e23744; font-size: 13px; margin-top: -5px;">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Personalised for you
+                </p>
+            </div>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#fff3f4;border:1px solid #ffc5c8;border-radius:20px;padding:5px 14px;font-size:12px;color:#c0392b;font-weight:600;white-space:nowrap;margin-top:6px;">
+                <i class="fa-solid fa-store"></i> Vendor Collaborative Filtering
+                <i class="fa-solid fa-circle-info ms-1" style="color:#aaa;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Restaurants loved by users with similar ordering patterns to yours"></i>
+            </span>
         </div>
         <div class="listing fancy">
             <ul class="row">
