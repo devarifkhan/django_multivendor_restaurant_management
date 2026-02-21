@@ -72,9 +72,9 @@
                     <div class="filter-wrapper">
                         <div class="categories-menu">
                             <h6><i class="icon-restaurant_menu"></i>Categories</h6>
-                            <ul class="menu-list">
+                            <ul class="menu-list" id="category-nav">
                                 {% for category in categories %}
-                                <li class="active"><a href="#" class="menu-category-link"> {{ category }} </a></li>
+                                <li><a href="#category-{{ category.id }}" class="menu-category-link" data-target="category-{{ category.id }}"> {{ category }} </a></li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -93,14 +93,14 @@
                                     <div id="menu-item-list-6272" class="menu-itam-list">
                                         
                                         {% for category in categories %}
-                                        <div class="element-title" id="menu-category-2">
+                                        <div class="element-title menu-category-section" id="category-{{ category.id }}">
                                             <h5 class="text-color">{{ category }}</h5>
                                             <span>{{ category.description }}</span>
                                         </div>
                                         <ul>
                                             {% for food in category.fooditems.all %}
-                                            <li style="flex-wrap:wrap;">
-                                                <div class="image-holder similar-trigger" data-food-id="{{ food.id }}" style="cursor:pointer;" title="Click to see similar items">
+                                            <li id="food-item-{{ food.id }}" style="flex-wrap:wrap;">
+                                                <div class="image-holder">
                                                     {% if food.image %}
                                                     <img src="{{ food.image.url }}" alt="{{ food.food_title }}">
                                                     {% else %}
@@ -108,9 +108,7 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="text-holder">
-                                                    <h6 class="similar-trigger" data-food-id="{{ food.id }}" style="cursor:pointer;">
-                                                        {{ food }}
-                                                    </h6>
+                                                    <h6>{{ food }}</h6>
                                                     <span>{{ food.description }}</span>
                                                     <!-- Similar toggle link -->
                                                     <a href="#" class="similar-toggle-link" data-food-id="{{ food.id }}"
@@ -175,8 +173,10 @@
 {% block js %}
 <script>
 (function () {
-    // Cache: food_id → fetched items (avoid repeated AJAX calls)
     const cache = {};
+
+    // Current vendor slug from URL: /marketplace/<slug>/
+    const currentVendorSlug = window.location.pathname.split('/').filter(Boolean).pop();
 
     function renderStars(rating) {
         let html = '';
@@ -189,23 +189,81 @@
     }
 
     function buildCard(item) {
+        const isSameVendor = item.vendor_slug === currentVendorSlug;
         const img = item.image
             ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:70px;object-fit:cover;border-radius:6px 6px 0 0;">`
             : `<img src="/static/images/default-food.png" alt="${item.title}" style="width:100%;height:70px;object-fit:cover;border-radius:6px 6px 0 0;">`;
         const stars = item.avg_rating ? `<div style="margin-top:2px;">${renderStars(item.avg_rating)}</div>` : '';
+
+        // Same vendor → scroll to item on this page; different → navigate to their page
+        const action = isSameVendor
+            ? `onclick="scrollToItem(${item.id}); return false;" href="#food-item-${item.id}"`
+            : `href="/marketplace/${item.vendor_slug}/"`;
+
+        const addBtn = `
+          <button onclick="event.preventDefault(); event.stopPropagation(); quickAdd(${item.id});"
+                  style="width:100%;margin-top:4px;padding:3px 0;font-size:10px;font-weight:600;
+                         background:#e23744;color:#fff;border:none;border-radius:4px;cursor:pointer;">
+              + Add to Cart
+          </button>`;
+
         return `
-        <a href="/vendor/${item.vendor_slug}/" style="text-decoration:none;color:inherit;">
-          <div style="width:120px;border:1px solid #f0f0f0;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);background:#fff;flex-shrink:0;">
+        <a ${action} style="text-decoration:none;color:inherit;">
+          <div style="width:120px;border:1px solid #f0f0f0;border-radius:8px;overflow:hidden;
+                      box-shadow:0 1px 4px rgba(0,0,0,0.08);background:#fff;flex-shrink:0;">
             ${img}
             <div style="padding:6px;">
               <p style="font-size:11px;font-weight:600;margin:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${item.title}</p>
               <p style="font-size:10px;color:#888;margin:1px 0;">${item.vendor}</p>
               <p style="font-size:11px;color:#e23744;font-weight:700;margin:2px 0;">$${item.price}</p>
               ${stars}
+              ${addBtn}
             </div>
           </div>
         </a>`;
     }
+
+    // Scroll to the food item on the same page and flash highlight it
+    window.scrollToItem = function (foodId) {
+        const el = document.getElementById(`food-item-${foodId}`);
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.transition = 'background 0.3s';
+        el.style.background = '#fff8e1';
+        setTimeout(() => { el.style.background = ''; }, 1800);
+    };
+
+    // Quick add to cart using the existing cart endpoint
+    window.quickAdd = function (foodId) {
+        const url = `/marketplace/add_to_cart/${foodId}/`;
+        fetch(url, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'login_required') {
+                window.location.href = '/login/';
+                return;
+            }
+            if (data.qty !== undefined) {
+                // Update the qty label on the main menu list
+                const qtyLabel = document.getElementById(`qty-${foodId}`);
+                if (qtyLabel) qtyLabel.textContent = data.qty;
+                // Update cart counter in navbar if present
+                const counter = document.getElementById('cart_counter');
+                if (counter && data.cart_counter) counter.textContent = data.cart_counter['cart_count'];
+                // Brief green flash on the Add button
+                const btns = document.querySelectorAll(`button[onclick*="quickAdd(${foodId})"]`);
+                btns.forEach(b => {
+                    b.textContent = '✓ Added';
+                    b.style.background = '#28a745';
+                    setTimeout(() => { b.textContent = '+ Add to Cart'; b.style.background = '#e23744'; }, 1200);
+                });
+            }
+        })
+        .catch(() => {});
+    };
 
     function showPanel(foodId) {
         const panel = document.getElementById(`similar-panel-${foodId}`);
@@ -215,7 +273,6 @@
         const chev  = link ? link.querySelector('.similar-chevron') : null;
 
         const isOpen = panel.style.display !== 'none';
-
         if (isOpen) {
             panel.style.display = 'none';
             if (text) text.textContent = 'See similar items';
@@ -227,19 +284,11 @@
         if (text) text.textContent = 'Hide similar';
         if (chev) chev.style.transform = 'rotate(180deg)';
 
-        // Already fetched?
-        if (cache[foodId]) {
-            renderItems(row, cache[foodId]);
-            return;
-        }
+        if (cache[foodId]) { renderItems(row, cache[foodId]); return; }
 
-        // AJAX call
         fetch(`/recommendations/similar-items/${foodId}/`)
             .then(r => r.json())
-            .then(data => {
-                cache[foodId] = data.items;
-                renderItems(row, data.items);
-            })
+            .then(data => { cache[foodId] = data.items; renderItems(row, data.items); })
             .catch(() => {
                 row.innerHTML = '<span style="font-size:12px;color:#aaa;">Could not load similar items.</span>';
             });
@@ -253,14 +302,48 @@
         row.innerHTML = items.map(buildCard).join('');
     }
 
-    // Delegated click — image, title, or the toggle link
     document.addEventListener('click', function (e) {
-        const trigger = e.target.closest('.similar-trigger, .similar-toggle-link');
+        const trigger = e.target.closest('.similar-toggle-link');
         if (!trigger) return;
         e.preventDefault();
         const foodId = trigger.dataset.foodId;
         if (foodId) showPanel(foodId);
     });
+
+    // ── Category sidebar navigation ──────────────────────────────────────
+    const catLinks = document.querySelectorAll('.menu-category-link');
+    const catSections = document.querySelectorAll('.menu-category-section');
+
+    function setActiveLink(targetId) {
+        catLinks.forEach(l => l.parentElement.classList.remove('active'));
+        const active = document.querySelector(`.menu-category-link[data-target="${targetId}"]`);
+        if (active) active.parentElement.classList.add('active');
+    }
+
+    catLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.dataset.target;
+            const section = document.getElementById(targetId);
+            if (!section) return;
+            const offset = 80; // account for sticky header
+            const top = section.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+            setActiveLink(targetId);
+        });
+    });
+
+    // Highlight sidebar link as user scrolls through categories
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setActiveLink(entry.target.id);
+            }
+        });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    catSections.forEach(s => observer.observe(s));
+    // ─────────────────────────────────────────────────────────────────────
 })();
 </script>
 {% endblock %}
